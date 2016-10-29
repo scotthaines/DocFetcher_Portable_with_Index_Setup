@@ -1,0 +1,11 @@
+[Setup]
+Lang=default
+Group=Git
+NoIcons=0
+SetupType=default
+Components=icons,icons\desktop,assoc,assoc_sh
+PathOption=BashOnly
+SSHOption=OpenSSH
+CRLFOption=CRLFCommitAsIs
+BashTerminalOption=ConHost
+PerformanceTweaksFSCache=Disabled
