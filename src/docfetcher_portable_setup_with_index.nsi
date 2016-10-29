@@ -1,16 +1,17 @@
 ;===============================
-; file: docfetcher_portable_setup.nsi
+; file: docfetcher_portable_setup_with_index.nsi
 ; created: 2016 09 04, Scott Haines
-; edit: 01 Scott Haines
-; date: 2016 09 04
-; description:  This places DocFetcher Portable in a folder with
-;               the included index(s). 
+; edit: 02 Scott Haines
+; date: 2016 10 29
+; description:  This places DocFetcher Portable in a folder and
+;               also places an index with DFP.
 ; 
 ;               I do not call this an install because it 
 ;               does not list DocFetcher in the computer's
 ;               list of installed programs. Remove the 
 ;               program by deleting its folder and associated
-;               shortcuts.
+;               shortcut. Check the desktop for a search 
+;               shortcut.
 ;-------------------------------
 ; Modern User Interface 2 (MUI2)
     !include "mui2.nsh"
@@ -27,10 +28,10 @@
 ;--------------------------------
 ; Version Information
 
-    !define YFS_Version 1.1.18.0
-    !define YFS_LongName "DFP with Indexes"
+    !define YFS_Version 1.0.0.0
+    !define YFS_LongName "DFP with Index"
     !define YFS_ShortName "DFP"
-    !define YFS_InstallerName "DocFetcherPortableSetupWithIndexes_1_1_18.exe"
+    !define YFS_InstallerName "DocFetcherPortableSetupWithIndex_1_0_0.exe"
 
     ; Blank the branding text which by default appears as
     ; 'Nullsoft Install System v2.46.5-Unicode'.
