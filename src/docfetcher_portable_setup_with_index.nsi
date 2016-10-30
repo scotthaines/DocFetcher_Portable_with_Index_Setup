@@ -1,8 +1,8 @@
 ;===============================
 ; file: docfetcher_portable_setup_with_index.nsi
 ; created: 2016 09 04, Scott Haines
-; edit: 02 Scott Haines
-; date: 2016 10 29
+; edit: 03 Scott Haines
+; date: 2016 10 30
 ; description:  This places DocFetcher Portable in a folder and
 ;               also places an index with DFP.
 ; 
@@ -84,7 +84,7 @@
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 
 !define MUI_WELCOMEPAGE_TEXT "Setup will guide you through the installation of $(^NameDA).$\r$\n$\r$\nEdit YOW Free Sample to write Your Own Web.$\r$\n$\r$\n$_CLICK"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "..\data\yow_free_sample_green.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "..\data\DocFetcher_Portable_Setup_blue.bmp"
 !insertmacro MUI_PAGE_WELCOME
 ; !define MUI_PAGE_HEADER_TEXT "Public Domain Dedication"
 ; !define MUI_PAGE_HEADER_SUBTEXT "Please review the dedication Deed and Legal Code before installing $(^NameDA)."
