@@ -1,8 +1,8 @@
 ;===============================
 ; file: docfetcher_portable_setup_with_index.nsi
 ; created: 2016 09 04, Scott Haines
-; edit: 03 Scott Haines
-; date: 2016 10 30
+; edit: 04 Scott Haines
+; date: 2016 11 01
 ; description:  This places DocFetcher Portable in a folder and
 ;               also places an index with DFP.
 ; 
@@ -23,7 +23,7 @@
     !include "FileFunc.nsh"
 
 ;-------------------------------
-    !define MUI_ICON "..\data\yow_free_sample_green.ico"
+    !define MUI_ICON "..\data\docfetcher_portable_blue.ico"
 
 ;--------------------------------
 ; Version Information
