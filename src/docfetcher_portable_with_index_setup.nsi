@@ -1,8 +1,8 @@
 ;===============================
 ; file: docfetcher_portable_with_index_setup.nsi
 ; created: 2016 09 04, Scott Haines
-; edit: 05 Scott Haines
-; date: 2016 11 03
+; edit: 06 Scott Haines
+; date: 2016 11 14
 ; description:  This places DocFetcher Portable in a folder and
 ;               also places an index with DFP.
 ; 
@@ -28,27 +28,27 @@
 ;--------------------------------
 ; Version Information
 
-    !define YFS_Version 1.0.0.0
-    !define YFS_LongName "DFP with Index"
-    !define YFS_ShortName "DFP"
-    !define YFS_InstallerName "DocFetcherPortableWithIndexSetup_1_0_0.exe"
+    !define DFP_Version 1.0.0.0
+    !define DFP_LongName "DFP with Index"
+    !define DFP_ShortName "DFP"
+    !define DFP_InstallerName "DocFetcherPortableWithIndexSetup_1_0_0.exe"
 
     ; Blank the branding text which by default appears as
     ; 'Nullsoft Install System v2.46.5-Unicode'.
     BrandingText /TRIMRIGHT " "
 
-    Name "${YFS_LongName}"
-    OutFile "..\exe\${YFS_InstallerName}"
+    Name "${DFP_LongName}"
+    OutFile "..\exe\${DFP_InstallerName}"
 
-    VIProductVersion ${YFS_Version}
-    VIAddVersionKey ProductName "${YFS_LongName}"
+    VIProductVersion ${DFP_Version}
+    VIAddVersionKey ProductName "${DFP_LongName}"
     VIAddVersionKey Comments "Your Own Web Free Sample (YFS) provides simple browser pages in a Git version control repository. Visit https://sites.google.com/site/friedbook/ for more information."
     VIAddVersionKey LegalCopyright "Public Domain"
-    VIAddVersionKey FileDescription "${YFS_LongName} installer"
-    VIAddVersionKey FileVersion ${YFS_Version}
-    VIAddVersionKey ProductVersion ${YFS_Version}
+    VIAddVersionKey FileDescription "${DFP_LongName} installer"
+    VIAddVersionKey FileVersion ${DFP_Version}
+    VIAddVersionKey ProductVersion ${DFP_Version}
     VIAddVersionKey LegalTrademarks "Friedbook, $\"Your Own Web$\" and YOW are Trademarks of Scott Haines."
-    VIAddVersionKey OriginalFilename "${YFS_InstallerName}"
+    VIAddVersionKey OriginalFilename "${DFP_InstallerName}"
 
     ; Initialize the INSTDIR.
     InstallDir ""
@@ -115,7 +115,7 @@ FunctionEnd
 Function ADirPre
     ${If} "" == "$dirDraft"
         ; This is the default install location.
-        StrCpy $INSTDIR "$DOCUMENTS\drafts\${YFS_ShortName}"
+        StrCpy $INSTDIR "$DOCUMENTS\drafts\${DFP_ShortName}"
     ${Else}
         StrCpy $INSTDIR "$dirDraft"
     ${EndIf}
@@ -220,8 +220,8 @@ REG_READ_FAILURE_C:
     ${Else}
         StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED32 INSTALL_GIT32
 GIT_INSTALL_FAILED32:
-            MessageBox MB_OK "Git was not installed. ${YFS_LongName} install will halt now." /SD IDOK
-            Abort "Git must be installed to install ${YFS_LongName}."
+            MessageBox MB_OK "Git was not installed. ${DFP_LongName} install will halt now." /SD IDOK
+            Abort "Git must be installed to install ${DFP_LongName}."
 
 INSTALL_GIT32:
         # Assume by this that Git is not installed.
@@ -241,8 +241,8 @@ INSTALL_GIT32:
 REG_READ_FAILURE_D:
     StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED64 INSTALL_GIT64
 GIT_INSTALL_FAILED64:
-    MessageBox MB_OK "Git was not installed. ${YFS_LongName} install will halt now." /SD IDOK
-    Abort "Git must be installed to install ${YFS_LongName}."
+    MessageBox MB_OK "Git was not installed. ${DFP_LongName} install will halt now." /SD IDOK
+    Abort "Git must be installed to install ${DFP_LongName}."
 
 INSTALL_GIT64:
     # Assume by this that Git is not installed.
