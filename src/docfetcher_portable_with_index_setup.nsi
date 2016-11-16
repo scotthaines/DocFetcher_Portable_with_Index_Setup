@@ -1,8 +1,8 @@
 ;===============================
 ; file: docfetcher_portable_with_index_setup.nsi
 ; created: 2016 09 04, Scott Haines
-; edit: 06 Scott Haines
-; date: 2016 11 14
+; edit: 07 Scott Haines
+; date: 2016 11 16
 ; description:  This places DocFetcher Portable in a folder and
 ;               also places an index with DFP.
 ; 
@@ -122,16 +122,20 @@ Function ADirPre
 FunctionEnd
 
 Function ADirLv
-    ; If the directory is empty or not found
-    ${DirState} $INSTDIR $R0
-    ${If} 1 != $R0
+;;; A directory with the YOW Free Sample installed is desired and
+;;; also necessary for the indexed search to be able to open and 
+;;; view actual files.
+;;; 2016 11 16
+;;;     ; If the directory is empty or not found
+;;;     ${DirState} $INSTDIR $R0
+;;;     ${If} 1 != $R0
         ; Use the selected directory.
         StrCpy $dirDraft $INSTDIR
-    ${Else}
-        ; Make the user try again.
-        MessageBox MB_OK "The destination folder must be empty or not exist. Enter another destination folder." /SD IDOK
-        Abort
-    ${EndIf}
+;;;     ${Else}
+;;;         ; Make the user try again.
+;;;         MessageBox MB_OK "The destination folder must be empty or not exist. Enter another destination folder." /SD IDOK
+;;;         Abort
+;;;     ${EndIf}
 
 FunctionEnd
 
@@ -173,135 +177,138 @@ Section "draft (required)" SecDraft
     ; Set output path to the installation directory.
     SetOutPath $dirDraft
 
-    ;--------
-    ; Install Git if it is not already installed.
-
-    ; Determine the Git install location if it is installed.
-    Var /Global GitInstallLocation
-    Var /Global GitInstallCheckAB
-    StrCpy $GitInstallCheckAB "CheckA"  ; This indicates first check.
-
-TRY_AGAIN:
-    StrCpy $GitInstallLocation "placeholder value"
-
-    ; This RunningX64 macro stuff is dependent on x64.nsh.
-    ${If} ${RunningX64}
-        # 64 bit code
-        SetRegView 64
-    ${Else}
-        # 32 bit code
-        SetRegView 32
-    ${EndIf}
-
-    ; First look for Git installed for all users.
-    ReadRegStr $GitInstallLocation HKLM Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
-    IfErrors REG_READ_FAILURE_A REG_READ_SUCCESS
-REG_READ_FAILURE_A:
-
-    ; Second look for Git installed just for the current user.
-    ReadRegStr $GitInstallLocation HKCU Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
-    IfErrors REG_READ_FAILURE_B REG_READ_SUCCESS
-REG_READ_FAILURE_B:
-
-    ; Third look for a Git 32 bit install on a 64 bit OS and installed for all.
-    ${If} ${RunningX64}
-        # There is a chance that they installed the 32 bit Git.
-        # Check for it as well.
-        SetRegView 32
-        ReadRegStr $GitInstallLocation HKLM Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
-        IfErrors REG_READ_FAILURE_C REG_READ_SUCCESS
-REG_READ_FAILURE_C:
-
-            # Fourth look for a Git 32 bit install on a 64 bit OS and installed
-            # just for the current user.
-            ReadRegStr $GitInstallLocation HKCU Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
-            IfErrors REG_READ_FAILURE_D REG_READ_SUCCESS
-                Goto REG_READ_SUCCESS
-    ${Else}
-        StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED32 INSTALL_GIT32
-GIT_INSTALL_FAILED32:
-            MessageBox MB_OK "Git was not installed. ${DFP_LongName} install will halt now." /SD IDOK
-            Abort "Git must be installed to install ${DFP_LongName}."
-
-INSTALL_GIT32:
-        # Assume by this that Git is not installed.
-        MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have clear reasons to use other settings."
-;       MessageBox MB_OK "Install 32 bit Git."
-        SetOutPath $PLUGINSDIR
-        SetRegView 32
-        File ..\data\Git-2.9.3-32-bit.exe
-        File ..\data\GitInf.txt
-        ExecWait '"Git-2.9.3-32-bit.exe" /LOADINF=GitInf.txt' $0
-        SetOutPath $dirDraft
-;       Goto REG_READ_SUCCESS
-        StrCpy $GitInstallCheckAB "CheckB"  ; This indicates second check.
-        Goto TRY_AGAIN
-    ${EndIf}
-
-REG_READ_FAILURE_D:
-    StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED64 INSTALL_GIT64
-GIT_INSTALL_FAILED64:
-    MessageBox MB_OK "Git was not installed. ${DFP_LongName} install will halt now." /SD IDOK
-    Abort "Git must be installed to install ${DFP_LongName}."
-
-INSTALL_GIT64:
-    # Assume by this that Git is not installed.
-    MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have clear reasons to use other settings."
-;   MessageBox MB_OK "Install 64 bit Git."
-    SetOutPath $PLUGINSDIR
-    SetRegView 64
-    File ..\data\Git-2.9.3-64-bit.exe
-    File ..\data\GitInf.txt
-    ExecWait '"Git-2.9.3-64-bit.exe" /LOADINF=GitInf.txt' $0
-    SetOutPath $dirDraft
-;   Goto REG_READ_SUCCESS
-    StrCpy $GitInstallCheckAB "CheckB"  ; This indicates second check.
-    Goto TRY_AGAIN
-
-REG_READ_SUCCESS:
-; The following message box is for debugging.
-;   MessageBox MB_OK "Git is already installed. This is the Git install location: $GitInstallLocation"
-
-    ;--------
-    ; Clone YOW Free Sample into the install directory.
-    ; Add files and folders to install here.
-
-    ; This installs the YOW Free Sample Git repository.
-    SetOutPath $PLUGINSDIR
-    File install_repository.cmd
-    File install_repository.sh
-
-    ; Install the repository.
-    ExecWait '"install_repository.cmd" $\"$GitInstallLocation$\" $\"$dirDraft$\"' $0
-    ; If the return value is 0
-    StrCmp "0" $0 0 INSTALLREPO_FAILURE
-        ; Print success on cloning text.
-        DetailPrint "Success: The repository is cloned."
-        Goto INSTALL_CONTINUE
-INSTALLREPO_FAILURE:
-        ; Print an error message to the detail list.
-        DetailPrint "Error: The repository is not cloned. Check that the clone source is"
-        DetailPrint "available and the destination directory is empty. Try again."
-        MessageBox MB_OK "Error: The repository is not cloned. Check that the clone source is available and the destination directory is empty. Try again." /SD IDOK
-        Abort
-
-INSTALL_CONTINUE:
-    SetOutPath $dirDraft
-    File "..\data\Public_Domain_Dedication.txt"
-
-    ; Get the last folder name in the dirDraft path.
-    ${GetFileName} "$dirDraft" $R0
-
-    ; Create a shortcut to display the home page.
-    ; Name the shortcut with the last folder's name.
-    CreateShortCut "$R0.lnk" "$dirDraft\repository\index.html"
-
-    ; Remember the installation folder.
-    WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocation" "$dirDraft"
-
-    Call WriteInstallSearchChoice
-
-    Call WriteShortcutChoice
+;;; Do not install Git or the YOW Free Sample repository.
+;;; These are not part of the DocFetcherPortableWithIndexSetup_1_0_0.exe.
+;;; 2016 11 16
+;;;     ;--------
+;;;     ; Install Git if it is not already installed.
+;;; 
+;;;     ; Determine the Git install location if it is installed.
+;;;     Var /Global GitInstallLocation
+;;;     Var /Global GitInstallCheckAB
+;;;     StrCpy $GitInstallCheckAB "CheckA"  ; This indicates first check.
+;;; 
+;;; TRY_AGAIN:
+;;;     StrCpy $GitInstallLocation "placeholder value"
+;;; 
+;;;     ; This RunningX64 macro stuff is dependent on x64.nsh.
+;;;     ${If} ${RunningX64}
+;;;         # 64 bit code
+;;;         SetRegView 64
+;;;     ${Else}
+;;;         # 32 bit code
+;;;         SetRegView 32
+;;;     ${EndIf}
+;;; 
+;;;     ; First look for Git installed for all users.
+;;;     ReadRegStr $GitInstallLocation HKLM Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
+;;;     IfErrors REG_READ_FAILURE_A REG_READ_SUCCESS
+;;; REG_READ_FAILURE_A:
+;;; 
+;;;     ; Second look for Git installed just for the current user.
+;;;     ReadRegStr $GitInstallLocation HKCU Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
+;;;     IfErrors REG_READ_FAILURE_B REG_READ_SUCCESS
+;;; REG_READ_FAILURE_B:
+;;; 
+;;;     ; Third look for a Git 32 bit install on a 64 bit OS and installed for all.
+;;;     ${If} ${RunningX64}
+;;;         # There is a chance that they installed the 32 bit Git.
+;;;         # Check for it as well.
+;;;         SetRegView 32
+;;;         ReadRegStr $GitInstallLocation HKLM Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
+;;;         IfErrors REG_READ_FAILURE_C REG_READ_SUCCESS
+;;; REG_READ_FAILURE_C:
+;;; 
+;;;             # Fourth look for a Git 32 bit install on a 64 bit OS and installed
+;;;             # just for the current user.
+;;;             ReadRegStr $GitInstallLocation HKCU Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
+;;;             IfErrors REG_READ_FAILURE_D REG_READ_SUCCESS
+;;;                 Goto REG_READ_SUCCESS
+;;;     ${Else}
+;;;         StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED32 INSTALL_GIT32
+;;; GIT_INSTALL_FAILED32:
+;;;             MessageBox MB_OK "Git was not installed. ${DFP_LongName} install will halt now." /SD IDOK
+;;;             Abort "Git must be installed to install ${DFP_LongName}."
+;;; 
+;;; INSTALL_GIT32:
+;;;         # Assume by this that Git is not installed.
+;;;         MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have clear reasons to use other settings."
+;;; ;       MessageBox MB_OK "Install 32 bit Git."
+;;;         SetOutPath $PLUGINSDIR
+;;;         SetRegView 32
+;;;         File ..\data\Git-2.9.3-32-bit.exe
+;;;         File ..\data\GitInf.txt
+;;;         ExecWait '"Git-2.9.3-32-bit.exe" /LOADINF=GitInf.txt' $0
+;;;         SetOutPath $dirDraft
+;;; ;       Goto REG_READ_SUCCESS
+;;;         StrCpy $GitInstallCheckAB "CheckB"  ; This indicates second check.
+;;;         Goto TRY_AGAIN
+;;;     ${EndIf}
+;;; 
+;;; REG_READ_FAILURE_D:
+;;;     StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED64 INSTALL_GIT64
+;;; GIT_INSTALL_FAILED64:
+;;;     MessageBox MB_OK "Git was not installed. ${DFP_LongName} install will halt now." /SD IDOK
+;;;     Abort "Git must be installed to install ${DFP_LongName}."
+;;; 
+;;; INSTALL_GIT64:
+;;;     # Assume by this that Git is not installed.
+;;;     MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have clear reasons to use other settings."
+;;; ;   MessageBox MB_OK "Install 64 bit Git."
+;;;     SetOutPath $PLUGINSDIR
+;;;     SetRegView 64
+;;;     File ..\data\Git-2.9.3-64-bit.exe
+;;;     File ..\data\GitInf.txt
+;;;     ExecWait '"Git-2.9.3-64-bit.exe" /LOADINF=GitInf.txt' $0
+;;;     SetOutPath $dirDraft
+;;; ;   Goto REG_READ_SUCCESS
+;;;     StrCpy $GitInstallCheckAB "CheckB"  ; This indicates second check.
+;;;     Goto TRY_AGAIN
+;;; 
+;;; REG_READ_SUCCESS:
+;;; ; The following message box is for debugging.
+;;; ;   MessageBox MB_OK "Git is already installed. This is the Git install location: $GitInstallLocation"
+;;; 
+;;;     ;--------
+;;;     ; Clone YOW Free Sample into the install directory.
+;;;     ; Add files and folders to install here.
+;;; 
+;;;     ; This installs the YOW Free Sample Git repository.
+;;;     SetOutPath $PLUGINSDIR
+;;;     File install_repository.cmd
+;;;     File install_repository.sh
+;;; 
+;;;     ; Install the repository.
+;;;     ExecWait '"install_repository.cmd" $\"$GitInstallLocation$\" $\"$dirDraft$\"' $0
+;;;     ; If the return value is 0
+;;;     StrCmp "0" $0 0 INSTALLREPO_FAILURE
+;;;         ; Print success on cloning text.
+;;;         DetailPrint "Success: The repository is cloned."
+;;;         Goto INSTALL_CONTINUE
+;;; INSTALLREPO_FAILURE:
+;;;         ; Print an error message to the detail list.
+;;;         DetailPrint "Error: The repository is not cloned. Check that the clone source is"
+;;;         DetailPrint "available and the destination directory is empty. Try again."
+;;;         MessageBox MB_OK "Error: The repository is not cloned. Check that the clone source is available and the destination directory is empty. Try again." /SD IDOK
+;;;         Abort
+;;; 
+;;; INSTALL_CONTINUE:
+;;;     SetOutPath $dirDraft
+;;;     File "..\data\Public_Domain_Dedication.txt"
+;;; 
+;;;     ; Get the last folder name in the dirDraft path.
+;;;     ${GetFileName} "$dirDraft" $R0
+;;; 
+;;;     ; Create a shortcut to display the home page.
+;;;     ; Name the shortcut with the last folder's name.
+;;;     CreateShortCut "$R0.lnk" "$dirDraft\repository\index.html"
+;;; 
+;;;     ; Remember the installation folder.
+;;;     WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocation" "$dirDraft"
+;;; 
+;;;     Call WriteInstallSearchChoice
+;;; 
+;;;     Call WriteShortcutChoice
 
 SectionEnd
 
