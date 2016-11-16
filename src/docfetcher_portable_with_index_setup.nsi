@@ -42,7 +42,7 @@
 
     VIProductVersion ${DFP_Version}
     VIAddVersionKey ProductName "${DFP_LongName}"
-    VIAddVersionKey Comments "Your Own Web Free Sample (YFS) provides simple browser pages in a Git version control repository. Visit https://sites.google.com/site/friedbook/ for more information."
+    VIAddVersionKey Comments "DocFetcher Portable with Index (DFP) provides indexed search for YOW Free Sample browser pages. Visit https://sites.google.com/site/friedbook/ for more information."
     VIAddVersionKey LegalCopyright "Public Domain"
     VIAddVersionKey FileDescription "${DFP_LongName} installer"
     VIAddVersionKey FileVersion ${DFP_Version}
@@ -83,7 +83,7 @@
 ; finish page.
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 
-!define MUI_WELCOMEPAGE_TEXT "Setup will guide you through the installation of $(^NameDA).$\r$\n$\r$\nEdit YOW Free Sample to write Your Own Web.$\r$\n$\r$\n$_CLICK"
+!define MUI_WELCOMEPAGE_TEXT "Setup will guide you through the installation of $(^NameDA).$\r$\n$\r$\nSearch YOW Free Sample with DFP and the installed index.$\r$\n$\r$\n$_CLICK"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "..\data\DocFetcher_Portable_Setup_blue.bmp"
 !insertmacro MUI_PAGE_WELCOME
 ; !define MUI_PAGE_HEADER_TEXT "Public Domain Dedication"
@@ -319,7 +319,7 @@ Section "Install search" SecInstallSearch
     File ..\data\docfetcher-1.1.18-portable.zip
     SetOutPath $dirDraft
 
-    ; Install the portable DocFetcher with YFS.
+    ; Install DocFetcher Portable with an index for YFS.
     ; Call plug-in. Push filename to ZIP first, and the dest. folder last.
     nsisunz::UnzipToLog "$PLUGINSDIR\docfetcher-1.1.18-portable.zip" "$INSTDIR"
 
