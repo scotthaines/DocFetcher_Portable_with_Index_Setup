@@ -1,8 +1,8 @@
 ;===============================
 ; file: docfetcher_portable_with_index_setup.nsi
 ; created: 2016 09 04, Scott Haines
-; edit: 07 Scott Haines
-; date: 2016 11 16
+; edit: 08 Scott Haines
+; date: 2016 11 17
 ; description:  This places DocFetcher Portable in a folder and
 ;               also places an index with DFP.
 ; 
@@ -98,12 +98,14 @@
 !define MUI_PAGE_CUSTOMFUNCTION_LEAVE "ADirLv"
     !insertmacro MUI_PAGE_DIRECTORY
     !insertmacro MUI_PAGE_INSTFILES
-!define MUI_FINISHPAGE_RUN
-!define MUI_FINISHPAGE_RUN_TEXT "&Open Home page (index.html) folder."
-!define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
-!define MUI_FINISHPAGE_RUN_NOTCHECKED
-!define MUI_FINISHPAGE_SHOWREADME "$dirDraft\repository\index.html"
-!define MUI_FINISHPAGE_SHOWREADME_TEXT "&Display Home page."
+;;; !define MUI_FINISHPAGE_RUN
+!define MUI_FINISHPAGE_RUN "$dirDraft\DocFetcher-1.1.18\DocFetcher.exe"
+;;; !define MUI_FINISHPAGE_RUN_TEXT "&Open Home page (index.html) folder."
+!define MUI_FINISHPAGE_RUN_TEXT "&Run DocFetcher with Index"
+;;; !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
+;;; !define MUI_FINISHPAGE_RUN_NOTCHECKED
+;;; !define MUI_FINISHPAGE_SHOWREADME "$dirDraft\repository\index.html"
+;;; !define MUI_FINISHPAGE_SHOWREADME_TEXT "&Display Home page."
     !insertmacro MUI_PAGE_FINISH
 
 Function LaunchLink
@@ -319,7 +321,9 @@ Section "Install search" SecInstallSearch
     ; The 2 means the section is the second listed in the components page.
     SectionIn 2
 
-    MessageBox MB_YESNO "Do you accept the license for DocFetcher?" IDNO SkipDocFetcherInstall
+;;; The license is displayed and asked about at the beginning of the 
+;;; install. This message box is redundant.
+;;;     MessageBox MB_YESNO "Do you accept the license for DocFetcher?" IDNO SkipDocFetcherInstall
 
     ; Install DocFetcher and related files.
     SetOutPath $PLUGINSDIR
@@ -355,8 +359,10 @@ Section "desktop shortcut" SecDesktopShortcut
 
     ; Get the last folder name in the dirDraft path.
     ${GetFileName} "$dirDraft" $R0
-    ; Create a shortcut on the desktop to display the home page.
-    CreateShortCut "$DESKTOP\$R0.lnk" "$dirDraft\repository\index.html"
+;;; This setup does not create anything directly to the repository.
+;;; This includes shortcuts to pages in the repository.
+;;;     ; Create a shortcut on the desktop to display the home page.
+;;;     CreateShortCut "$DESKTOP\$R0.lnk" "$dirDraft\repository\index.html"
 
     SectionGetFlags ${SecInstallSearch} $R1
     IntOp $R2 $R1 & ${SF_SELECTED}
@@ -388,11 +394,12 @@ SectionEnd
 Function .onInstSuccess
     SectionGetFlags ${SecInstallSearch} $R3
     IntOp $R4 $R3 & ${SF_SELECTED}
-    ; If install search is selected
-	${If} $R4 != 0
-        ; Run the search so the user sees it.
-        Exec '"$dirDraft\DocFetcher-1.1.18\DocFetcher.exe"'
-    ${EndIf}
+;;; This is done per checkbox state now.
+;;;     ; If install search is selected
+;;; 	${If} $R4 != 0
+;;;         ; Run the search so the user sees it.
+;;;         Exec '"$dirDraft\DocFetcher-1.1.18\DocFetcher.exe"'
+;;;     ${EndIf}
 FunctionEnd
 
 ;--------------------------------
