@@ -1,8 +1,8 @@
 ;===============================
 ; file: docfetcher_portable_with_index_setup.nsi
 ; created: 2016 09 04, Scott Haines
-; edit: 08 Scott Haines
-; date: 2016 11 17
+; edit: 09 Scott Haines
+; date: 2016 11 18
 ; description:  This places DocFetcher Portable in a folder and
 ;               also places an index with DFP.
 ; 
@@ -164,20 +164,20 @@ FunctionEnd
 ;-------------------------------
 ; Installer section
 ; Install working copy (draft) of the YOW Free Sample repository.
-Section "draft (required)" SecDraft
-                                        ; Now there is a components page so the
-                                        ; name is important.
-    ; The RO means the section is a Read Only section so it is required.
-    SectionIn RO
-    SectionIn 1
-
-    ; Initialize the temporary folder path.
-    ; "This folder is automatically deleted when the installer exits."
-    ; It variable is $PLUGINSDIR.
-    InitPluginsDir
-
-    ; Set output path to the installation directory.
-    SetOutPath $dirDraft
+;;; Section "draft (required)" SecDraft
+;;;                                         ; Now there is a components page so the
+;;;                                         ; name is important.
+;;;     ; The RO means the section is a Read Only section so it is required.
+;;;     SectionIn RO
+;;;     SectionIn 1
+;;; 
+;;;     ; Initialize the temporary folder path.
+;;;     ; "This folder is automatically deleted when the installer exits."
+;;;     ; It variable is $PLUGINSDIR.
+;;;     InitPluginsDir
+;;; 
+;;;     ; Set output path to the installation directory.
+;;;     SetOutPath $dirDraft
 
 ;;; Do not install Git or the YOW Free Sample repository.
 ;;; These are not part of the DocFetcherPortableWithIndexSetup_1_0_0.exe.
@@ -312,14 +312,18 @@ Section "draft (required)" SecDraft
 ;;; 
 ;;;     Call WriteShortcutChoice
 
-SectionEnd
+;;; SectionEnd
 
 ;-------------------------------
 ; Installer section
 ; Install Search.
 Section "Install search" SecInstallSearch
-    ; The 2 means the section is the second listed in the components page.
-    SectionIn 2
+;;;     ; The 2 means the section is the second listed in the components page.
+;;;     SectionIn 2
+
+    ; The RO means the section is a Read Only section so it is required.
+    SectionIn RO
+    SectionIn 1
 
 ;;; The license is displayed and asked about at the beginning of the 
 ;;; install. This message box is redundant.
@@ -354,8 +358,11 @@ SectionEnd
 ; Installer section
 ; Create the desktop shortcut.
 Section "desktop shortcut" SecDesktopShortcut
-    ; The 3 means the section is the third listed in the components page.
-    SectionIn 3
+;;;     ; The 3 means the section is the third listed in the components page.
+;;;     SectionIn 3
+
+    ; The 2 means the section is the second listed in the components page.
+    SectionIn 2
 
     ; Get the last folder name in the dirDraft path.
     ${GetFileName} "$dirDraft" $R0
@@ -406,13 +413,13 @@ FunctionEnd
 ; Descriptions
 
   ; Language strings
-  LangString DESC_SecDraft ${LANG_ENGLISH} "Install YOW Free Sample pages and their Git repository. It is a clone of their repository on GitHub.$\r$\n$\r$\nEdit and commit these pages to create Your Own Web of pages."
+;;;   LangString DESC_SecDraft ${LANG_ENGLISH} "Install YOW Free Sample pages and their Git repository. It is a clone of their repository on GitHub.$\r$\n$\r$\nEdit and commit these pages to create Your Own Web of pages."
   LangString DESC_SecInstallSearch ${LANG_ENGLISH} "Install the DocFetcher search program with an index for searching the YOW Free Sample (YFS) pages."
   LangString DESC_SecDesktopShortcut ${LANG_ENGLISH} "Create desktop shortcut(s)."
 
   ; Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SecDraft} $(DESC_SecDraft)
+;;;   !insertmacro MUI_DESCRIPTION_TEXT ${SecDraft} $(DESC_SecDraft)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecInstallSearch} $(DESC_SecInstallSearch)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecDesktopShortcut} $(DESC_SecDesktopShortcut)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
