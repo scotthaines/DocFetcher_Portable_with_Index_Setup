@@ -1,8 +1,8 @@
 ;===============================
 ; file: docfetcher_portable_with_index_setup.nsi
 ; created: 2016 09 04, Scott Haines
-; edit: 09 Scott Haines
-; date: 2016 11 18
+; edit: 10 Scott Haines
+; date: 2016 11 20
 ; description:  This places DocFetcher Portable in a folder and
 ;               also places an index with DFP.
 ; 
@@ -78,6 +78,7 @@
 ; MUI pages
 
     Var /GLOBAL dirDraft
+    Var /GLOBAL getDefault
 
 ; The following define makes the show details displayed before the
 ; finish page.
@@ -120,6 +121,13 @@ Function ADirPre
         StrCpy $INSTDIR "$DOCUMENTS\drafts\${DFP_ShortName}"
     ${Else}
         StrCpy $INSTDIR "$dirDraft"
+    ${EndIf}
+    ; Do not display the directory page.
+    ${If} "installDir" == "$getDefault"
+;;;     ${If} "false" == "$displayDirectoryPage"
+        ; Directory page display is off.
+        Abort   ; This blocks the display of the directory page.
+                ; Test code, 2016 11 20.
     ${EndIf}
 FunctionEnd
 
@@ -350,7 +358,7 @@ ok:
     ; SetOverwrite on ; This is already the default state.
 	File /a /r "..\data\DocFetcher-1.1.18\indexes"
 
-SkipDocFetcherInstall:
+;;; SkipDocFetcherInstall:
 
 SectionEnd
 
@@ -394,6 +402,8 @@ Section
         ; Create a shortcut to DocFetcher in the draft root folder.
         ; Base the shortcut name on the last folder's name.
         SetOutPath $dirDraft
+        ; Get the last folder name in the dirDraft path.
+        ${GetFileName} "$dirDraft" $R0
         CreateShortCut "$R0 Search.lnk" "$dirDraft\DocFetcher-1.1.18\DocFetcher.exe"
     ${EndIf}
 SectionEnd
@@ -427,14 +437,21 @@ FunctionEnd
 Function .onInit
 
     Var /GLOBAL getParams
-    Var /GLOBAL getDefault
+    Var /GLOBAL displayDirectoryPage
+    StrCpy $displayDirectoryPage "true"
+
     ${GetParameters} $getParams
     ${GetOptions} $getParams "/default=" $getDefault
     ; If /default=all is a command line parameter.
     ${If} "all" == "$getDefault"
         ; Remove all of the installer's registry settings.
         ; These are setup UI language and install path.
-        DeleteRegKey /ifempty HKCU "Software\YOW\Free Sample"
+        DeleteRegKey /ifempty HKCU "Software\YOW\DFPWithIndex"
+    ${EndIf}
+    ; If /default=installDir is a command line parameter.
+    ${If} "installDir" == "$getDefault"
+        ; Directory page display is off.
+        StrCpy $displayDirectoryPage "false"
     ${EndIf}
     ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallLocation"
     StrCpy $dirDraft "$0"
@@ -451,15 +468,15 @@ Function WriteShortcutChoice
     SectionGetFlags ${SecDesktopShortcut} $0
     IntOp $0 $0 & ${SF_SELECTED}
     ${If} $0 == ${SF_SELECTED}
-        WriteRegStr HKCU "Software\YOW\Free Sample" "CreateDesktopShortcut" "true"
+        WriteRegStr HKCU "Software\YOW\DFPWithIndex" "CreateDesktopShortcut" "true"
     ${Else}
-        WriteRegStr HKCU "Software\YOW\Free Sample" "CreateDesktopShortcut" "false"
+        WriteRegStr HKCU "Software\YOW\DFPWithIndex" "CreateDesktopShortcut" "false"
     ${EndIf}
 FunctionEnd
 
 Function ReadShortcutChoice
     ; Read the desktop shortcut creation choice from the registry.
-    ReadRegStr $0 HKCU "Software\YOW\Free Sample" "CreateDesktopShortcut"
+    ReadRegStr $0 HKCU "Software\YOW\DFPWithIndex" "CreateDesktopShortcut"
     ; "" is returned if no entry exists. This makes 'else' checked default.
     ${If} $0 == "false"
         ; Lower the selected flag.
@@ -474,39 +491,39 @@ Function ReadShortcutChoice
     ${EndIf}
 FunctionEnd
 
-Function WriteInstallSearchChoice
-    ; Write the install search choice to the registry.
-    ; This is used to set the initial choice during the next install.
-    SectionGetFlags ${SecInstallSearch} $0
-    IntOp $0 $0 & ${SF_SELECTED}
-    ${If} $0 == ${SF_SELECTED}
-        WriteRegStr HKCU "Software\YOW\Free Sample" "InstallSearch" "true"
-    ${Else}
-        WriteRegStr HKCU "Software\YOW\Free Sample" "InstallSearch" "false"
-    ${EndIf}
-FunctionEnd
+;;; Function WriteInstallSearchChoice
+;;;     ; Write the install search choice to the registry.
+;;;     ; This is used to set the initial choice during the next install.
+;;;     SectionGetFlags ${SecInstallSearch} $0
+;;;     IntOp $0 $0 & ${SF_SELECTED}
+;;;     ${If} $0 == ${SF_SELECTED}
+;;;         WriteRegStr HKCU "Software\YOW\Free Sample" "InstallSearch" "true"
+;;;     ${Else}
+;;;         WriteRegStr HKCU "Software\YOW\Free Sample" "InstallSearch" "false"
+;;;     ${EndIf}
+;;; FunctionEnd
 
-Function ReadInstallSearchChoice
-    ; Read the install search choice from the registry.
-    ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallSearch"
-    ; "" is returned if no entry exists. This makes 'else' checked default.
-    ${If} $0 == "false"
-        ; Lower the selected flag.
-        SectionGetFlags ${SecInstallSearch} $0
-        IntOp $0 $0 & ${SECTION_OFF}
-        SectionSetFlags ${SecInstallSearch} $0
-    ${Else}
-        ; Raise the selected flag.
-        SectionGetFlags ${SecInstallSearch} $0
-        IntOp $0 $0 | ${SF_SELECTED}
-        SectionSetFlags ${SecInstallSearch} $0
-    ${EndIf}
-FunctionEnd
+;;; Function ReadInstallSearchChoice
+;;;     ; Read the install search choice from the registry.
+;;;     ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallSearch"
+;;;     ; "" is returned if no entry exists. This makes 'else' checked default.
+;;;     ${If} $0 == "false"
+;;;         ; Lower the selected flag.
+;;;         SectionGetFlags ${SecInstallSearch} $0
+;;;         IntOp $0 $0 & ${SECTION_OFF}
+;;;         SectionSetFlags ${SecInstallSearch} $0
+;;;     ${Else}
+;;;         ; Raise the selected flag.
+;;;         SectionGetFlags ${SecInstallSearch} $0
+;;;         IntOp $0 $0 | ${SF_SELECTED}
+;;;         SectionSetFlags ${SecInstallSearch} $0
+;;;     ${EndIf}
+;;; FunctionEnd
 
 Function ReadComponentChoices
     Call ReadShortcutChoice
 
-    Call ReadInstallSearchChoice
+;;;     Call ReadInstallSearchChoice
 
 FunctionEnd
 ;===============================
