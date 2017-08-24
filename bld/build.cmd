@@ -1,7 +1,7 @@
 rem file: build.cmd
 rem created: 2015 12, Scott Haines
-rem edit: 14, Scott Haines
-rem date: 2016 11 03
+rem edit: 15, Scott Haines
+rem date: 2017 08 23
 rem description: Build the installer .exe from its .nsi source file.
 rem input: The input percent 1 parameter should be a .nsi file in
 rem        the ..\src directory.
@@ -15,7 +15,7 @@ if 0 NEQ %ERRORLEVEL% (
 
 rem Delete a previous installer .exe if it exists.
 rem This makes it clear whether this build succeeded or not.
-del ..\exe\DocFetcherPortableWithIndexSetup_1_0_0.exe
+del ..\exe\DocFetcherPortableWithIndexSetup_1_1_0.exe
 
 rem If the ..\log build log file directory does not already exist
 dir ..\log /AD
@@ -43,9 +43,9 @@ if 0 EQU %ERRORLEVEL% (
 @echo     The NSIS Unicode install builder was not found on the computer.
 :COMMONEXIT
 rem If the installer .exe is not created
-dir ..\exe\DocFetcherPortableWithIndexSetup_1_0_0.exe /A-D
+dir ..\exe\DocFetcherPortableWithIndexSetup_1_1_0.exe /A-D
 if 0 EQU %ERRORLEVEL% (
-	@echo Run the installer ..\exe\DocFetcherPortableWithIndexSetup_1_0_0.exe now to test it.
+	@echo Run the installer ..\exe\DocFetcherPortableWithIndexSetup_1_1_0.exe now to test it.
     @echo The build succeeded.
 	@echo The installer .exe was created.
 ) else (

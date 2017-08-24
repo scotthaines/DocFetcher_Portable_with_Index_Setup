@@ -1,8 +1,8 @@
 ;===============================
 ; file: docfetcher_portable_with_index_setup.nsi
 ; created: 2016 09 04, Scott Haines
-; edit: 11 Scott Haines
-; date: 2016 11 24
+; edit: 12 Scott Haines
+; date: 2017 08 22
 ; description:  This places DocFetcher Portable in a folder and
 ;               also places an index with DFP.
 ; 
@@ -28,10 +28,10 @@
 ;--------------------------------
 ; Version Information
 
-    !define DFP_Version 1.0.0.0
+    !define DFP_Version 1.1.0.0
     !define DFP_LongName "DFP with Index"
     !define DFP_ShortName "DFP"
-    !define DFP_InstallerName "DocFetcherPortableWithIndexSetup_1_0_0.exe"
+    !define DFP_InstallerName "DocFetcherPortableWithIndexSetup_1_1_0.exe"
 
     ; Blank the branding text which by default appears as
     ; 'Nullsoft Install System v2.46.5-Unicode'.
@@ -92,14 +92,14 @@
 ; !define MUI_LICENSEPAGE_TEXT_TOP "Press Page Down to see the rest of the dedication."
 ; !define MUI_LICENSEPAGE_TEXT_BOTTOM "$_CLICK"
 ; !define MUI_LICENSEPAGE_BUTTON "&Next >"
-    !insertmacro MUI_PAGE_LICENSE "..\data\DocFetcher-1.1.18\license\epl-v10.rtf"
+    !insertmacro MUI_PAGE_LICENSE "..\data\DocFetcher-1.1.19\license\epl-v10.rtf"
 !define MUI_PAGE_CUSTOMFUNCTION_PRE "ReadComponentChoices"
     !insertmacro MUI_PAGE_COMPONENTS
 !define MUI_PAGE_CUSTOMFUNCTION_PRE "ADirPre"
 !define MUI_PAGE_CUSTOMFUNCTION_LEAVE "ADirLv"
     !insertmacro MUI_PAGE_DIRECTORY
     !insertmacro MUI_PAGE_INSTFILES
-!define MUI_FINISHPAGE_RUN "$dirDraft\DocFetcher-1.1.18\DocFetcher.exe"
+!define MUI_FINISHPAGE_RUN "$dirDraft\DocFetcher-1.1.19\DocFetcher.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "&Run DocFetcher with Index"
     !insertmacro MUI_PAGE_FINISH
 
@@ -159,12 +159,12 @@ Section "Install search" SecInstallSearch
 
     ; Install DocFetcher and related files.
     SetOutPath $PLUGINSDIR
-    File ..\data\docfetcher-1.1.18-portable.zip
+    File ..\data\docfetcher-1.1.19-portable.zip
     SetOutPath $dirDraft
 
     ; Install DocFetcher Portable with an index for YFS.
     ; Call plug-in. Push filename to ZIP first, and the dest. folder last.
-    nsisunz::UnzipToLog "$PLUGINSDIR\docfetcher-1.1.18-portable.zip" "$INSTDIR"
+    nsisunz::UnzipToLog "$PLUGINSDIR\docfetcher-1.1.19-portable.zip" "$INSTDIR"
 
     ; Always check the result on the stack.
     Pop $0
@@ -173,10 +173,10 @@ Section "Install search" SecInstallSearch
 ok:
 
     ; Install the pregenerated indexed search for the YFS repository directory.
-    SetOutPath $dirDraft\DocFetcher-1.1.18
+    SetOutPath $dirDraft\DocFetcher-1.1.19
 
     ; SetOverwrite on ; This is already the default state.
-    File /a /r "..\data\DocFetcher-1.1.18\indexes"
+    File /a /r "..\data\DocFetcher-1.1.19\indexes"
 
 SectionEnd
 
@@ -196,7 +196,7 @@ Section "desktop shortcut" SecDesktopShortcut
     ${If} $R2 != 0
         ; Create a desktop shortcut to DocFetcher.
         ; Base the shortcut name on the last folder's name.
-        CreateShortCut "$DESKTOP\$R0 Search.lnk" "$dirDraft\DocFetcher-1.1.18\DocFetcher.exe"
+        CreateShortCut "$DESKTOP\$R0 Search.lnk" "$dirDraft\DocFetcher-1.1.19\DocFetcher.exe"
     ${EndIf}
 
 SectionEnd
@@ -215,7 +215,7 @@ Section
         SetOutPath $dirDraft
         ; Get the last folder name in the dirDraft path.
         ${GetFileName} "$dirDraft" $R0
-        CreateShortCut "$R0 Search.lnk" "$dirDraft\DocFetcher-1.1.18\DocFetcher.exe"
+        CreateShortCut "$R0 Search.lnk" "$dirDraft\DocFetcher-1.1.19\DocFetcher.exe"
     ${EndIf}
 SectionEnd
 
