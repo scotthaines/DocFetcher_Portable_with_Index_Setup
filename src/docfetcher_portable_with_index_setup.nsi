@@ -1,8 +1,8 @@
 ;===============================
 ; file: docfetcher_portable_with_index_setup.nsi
 ; created: 2016 09 04, Scott Haines
-; edit: 13 Scott Haines
-; date: 2017 09 08
+; edit: 14 Scott Haines
+; date: 2017 09 11
 ; description:  This places DocFetcher Portable in a folder and
 ;               also places an index with DFP.
 ; 
@@ -28,10 +28,10 @@
 ;--------------------------------
 ; Version Information
 
-    !define DFP_Version 1.2.0.0
+    !define DFP_Version 1.3.0.0
     !define DFP_LongName "DFP with Index"
     !define DFP_ShortName "DFP"
-    !define DFP_InstallerName "DocFetcherPortableWithIndexSetup_1_2_0.exe"
+    !define DFP_InstallerName "DocFetcherPortableWithIndexSetup_1_3_0.exe"
 
     ; Blank the branding text which by default appears as
     ; 'Nullsoft Install System v2.46.5-Unicode'.
